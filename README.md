@@ -8,10 +8,26 @@ The current beta supports Apple Silicon Macs only.
 
 ```sh
 brew install tiki51/canopy/canopy
-canopy start
+brew services start tiki51/canopy/canopy
 ```
 
-Open <http://127.0.0.1:4000>. Press `Ctrl-C` to stop Canopy.
+Open <http://127.0.0.1:4000>. Canopy runs in the background and starts automatically when you log in.
+
+Manage the service with:
+
+```sh
+brew services stop tiki51/canopy/canopy
+brew services restart tiki51/canopy/canopy
+brew services list
+```
+
+Run `canopy start` instead when you want Canopy in the foreground. Press `Ctrl-C` to stop it.
+
+New databases receive the default agents automatically. You can add any missing defaults later without overwriting customizations while the service is running:
+
+```sh
+canopy seed
+```
 
 Canopy stores its database, shared files, and generated secret under `~/Library/Application Support/Canopy`. Uninstalling the formula does not remove this user data.
 

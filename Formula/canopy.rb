@@ -7,7 +7,7 @@ class Canopy < Formula
   url "https://github.com/tiki51/canopy/releases/download/v0.1.0-beta.1/canopy-0.1.0-beta.1-aarch64-apple-darwin.tar.gz"
   sha256 "a617b2ad131f7c34c7e487401cd748ade94db810fe2525737af0cab202724aa7"
   license "MIT"
-  revision 1
+  revision 2
 
   depends_on arch: :arm64
   depends_on :macos
@@ -80,7 +80,13 @@ class Canopy < Formula
     <<~EOS
       Canopy is currently an Apple Silicon beta.
 
-      Start it in the foreground with:
+      Start Canopy now and automatically at login with:
+        brew services start tiki51/canopy/canopy
+
+      Stop the background service with:
+        brew services stop tiki51/canopy/canopy
+
+      To run Canopy in the foreground instead:
         canopy start
 
       A new database receives the default agents automatically. To add any
@@ -92,6 +98,13 @@ class Canopy < Formula
 
       Claude Code and OpenCode are optional, independently installed engines.
     EOS
+  end
+
+  service do
+    run [opt_bin/"canopy", "start"]
+    keep_alive true
+    log_path var/"log/canopy.log"
+    error_log_path var/"log/canopy.log"
   end
 
   test do
