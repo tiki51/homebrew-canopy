@@ -7,6 +7,7 @@ class Canopy < Formula
   url "https://github.com/tiki51/canopy/releases/download/v0.1.0-beta.1/canopy-0.1.0-beta.1-aarch64-apple-darwin.tar.gz"
   sha256 "a617b2ad131f7c34c7e487401cd748ade94db810fe2525737af0cab202724aa7"
   license "MIT"
+  revision 1
 
   depends_on arch: :arm64
   depends_on :macos
@@ -43,9 +44,34 @@ class Canopy < Formula
       DATABASE_PATH="${DATABASE_PATH:-$state_dir/canopy.db}"
       CANOPY_FILES_DIR="${CANOPY_FILES_DIR:-$state_dir/files}"
       CANOPY_URL="${CANOPY_URL:-http://127.0.0.1:$PORT}"
-      PHX_SERVER=true
 
-      export PORT DATABASE_PATH CANOPY_FILES_DIR CANOPY_URL PHX_SERVER SECRET_KEY_BASE
+      export PORT DATABASE_PATH CANOPY_FILES_DIR CANOPY_URL SECRET_KEY_BASE
+
+      seed() {
+        (
+          unset PHX_SERVER
+          RELEASE_NODE="canopy_seed_$$@localhost"
+          export RELEASE_NODE
+          exec "#{libexec}/bin/canopy" eval 'Code.ensure_loaded!(Canopy.Release); if function_exported?(Canopy.Release, :seed, 0), do: Canopy.Release.seed(), else: (Application.ensure_all_started(:canopy); Code.eval_file(Application.app_dir(:canopy, "priv/repo/seeds.exs")))'
+        )
+      }
+
+      if [ "${1:-}" = "seed" ]; then
+        shift
+        if [ "$#" -ne 0 ]; then
+          printf '%s\n' "usage: canopy seed" >&2
+          exit 64
+        fi
+        seed
+        exit
+      fi
+
+      if [ "${1:-}" = "start" ] && [ ! -e "$DATABASE_PATH" ]; then
+        seed
+      fi
+
+      PHX_SERVER=true
+      export PHX_SERVER
       exec "#{libexec}/bin/canopy" "$@"
     SH
   end
@@ -56,6 +82,10 @@ class Canopy < Formula
 
       Start it in the foreground with:
         canopy start
+
+      A new database receives the default agents automatically. To add any
+      missing defaults later without overwriting customized agents, run:
+        canopy seed
 
       Then open http://127.0.0.1:4000. User data is stored under:
         ~/Library/Application Support/Canopy
@@ -90,6 +120,9 @@ class Canopy < Formula
 
       assert_match '"status":"ok"', response
       assert_path_exists testpath/"state/canopy.db"
+      assert_match "created agent @backend", log.read
+      seed_output = shell_output("#{bin}/canopy seed")
+      assert_match "agent @backend already exists", seed_output
     ensure
       Process.kill("TERM", pid)
       Process.wait(pid)
