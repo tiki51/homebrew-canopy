@@ -74,7 +74,7 @@ class Canopy < Formula
     ENV["CANOPY_URL"] = "http://127.0.0.1:#{port}"
 
     log = testpath/"canopy.log"
-    pid = spawn bin/"canopy", "start", out: log, err: log
+    pid = spawn bin/"canopy", "start", out: log.to_s, err: [:child, :out]
 
     begin
       response = ""
