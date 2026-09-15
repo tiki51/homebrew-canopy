@@ -5,7 +5,6 @@ class Canopy < Formula
   desc "Local-first workspace where AI coding agents work as a team"
   homepage "https://github.com/tiki51/canopy"
   url "https://github.com/tiki51/canopy/releases/download/v0.1.0-beta.1/canopy-0.1.0-beta.1-aarch64-apple-darwin.tar.gz"
-  version "0.1.0-beta.1"
   sha256 "a617b2ad131f7c34c7e487401cd748ade94db810fe2525737af0cab202724aa7"
   license "MIT"
 

@@ -1,0 +1,25 @@
+name: Test formula
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tap
+        run: brew install tiki51/canopy/canopy
+      - name: Audit formula
+        run: brew audit --strict --online tiki51/canopy/canopy
+      - name: Check style
+        run: brew style tiki51/canopy/canopy
+      - name: Test formula
+        run: brew test tiki51/canopy/canopy
+      - name: Uninstall formula
+        run: brew uninstall canopy

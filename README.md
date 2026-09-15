@@ -7,8 +7,7 @@ The current beta supports Apple Silicon Macs only.
 ## Install
 
 ```sh
-brew tap tiki51/canopy
-brew install canopy
+brew install tiki51/canopy/canopy
 canopy start
 ```
 
