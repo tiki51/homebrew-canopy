@@ -120,7 +120,7 @@ class Canopy < Formula
 
       assert_match '"status":"ok"', response
       assert_path_exists testpath/"state/canopy.db"
-      assert_match "created agent @backend", log.read
+      assert_match "created agent @backend", File.binread(log).scrub
       seed_output = shell_output("#{bin}/canopy seed")
       assert_match "agent @backend already exists", seed_output
     ensure
