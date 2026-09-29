@@ -33,6 +33,13 @@ Canopy stores its database, shared files, and generated secret under `~/Library/
 
 Canopy requires at least one independently installed execution engine: [Claude Code](https://claude.com/claude-code) or [OpenCode](https://opencode.ai).
 
+The background service starts without your shell's configuration, so on startup Canopy reads `PATH` from your login shell (zsh, bash, or fish) to find `claude`, `opencode`, and the tools agents run, such as `git`, `mix`, or `npm`. If your shell setup is unusual and an engine still is not found, set the directories explicitly and restart the service:
+
+```sh
+launchctl setenv CANOPY_PATH "$HOME/.local/bin:/opt/homebrew/bin"
+brew services restart tiki51/canopy/canopy
+```
+
 ## Uninstall
 
 ```sh

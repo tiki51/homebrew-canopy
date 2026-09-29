@@ -7,7 +7,7 @@ class Canopy < Formula
   url "https://github.com/tiki51/canopy/releases/download/v0.1.0-beta.1/canopy-0.1.0-beta.1-aarch64-apple-darwin.tar.gz"
   sha256 "a617b2ad131f7c34c7e487401cd748ade94db810fe2525737af0cab202724aa7"
   license "MIT"
-  revision 2
+  revision 3
 
   depends_on arch: :arm64
   depends_on :macos
@@ -66,6 +66,31 @@ class Canopy < Formula
         exit
       fi
 
+      # launchd starts services with a minimal PATH, so engines (claude, opencode)
+      # and the tools agents run (git, mix, npm) would not resolve. Adopt the
+      # PATH from the user's interactive login shell (zsh, bash, or fish), or
+      # CANOPY_PATH when it is set. The probe is capped at 10 seconds so a shell
+      # startup file that blocks cannot stall the service.
+      if [ "${1:-}" = "start" ]; then
+        if [ -n "${CANOPY_PATH:-}" ]; then
+          PATH="$CANOPY_PATH:$PATH"
+        else
+          user_shell="${SHELL:-}"
+          if [ -z "$user_shell" ]; then
+            user_shell=$(/usr/bin/dscl . -read "/Users/$(/usr/bin/id -un)" UserShell 2>/dev/null | /usr/bin/awk '{ print $2 }') || true
+          fi
+          if [ -x "${user_shell:-}" ]; then
+            shell_path=$(/usr/bin/perl -e '$t = shift; $pid = fork; exit 1 unless defined $pid; if (!$pid) { setpgrp(0, 0); exec @ARGV; exit 127 } $SIG{ALRM} = sub { kill "KILL", -$pid; exit 1 }; alarm $t; waitpid($pid, 0); exit($? >> 8)' 10 \\
+              "$user_shell" -ilc '/bin/echo; /bin/echo __CANOPY_PATH__; /usr/bin/printenv PATH' </dev/null 2>/dev/null |
+              /usr/bin/awk 'found { print; exit } $0 == "__CANOPY_PATH__" { found = 1 }') || true
+            if [ -n "${shell_path:-}" ]; then
+              PATH="$shell_path:$PATH"
+            fi
+          fi
+        fi
+        export PATH
+      fi
+
       if [ "${1:-}" = "start" ] && [ ! -e "$DATABASE_PATH" ]; then
         seed
       fi
@@ -103,6 +128,7 @@ class Canopy < Formula
   service do
     run [opt_bin/"canopy", "start"]
     keep_alive true
+    environment_variables PATH: std_service_path_env
     log_path var/"log/canopy.log"
     error_log_path var/"log/canopy.log"
   end
