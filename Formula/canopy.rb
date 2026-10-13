@@ -140,6 +140,8 @@ class Canopy < Formula
     ENV["CANOPY_STATE_DIR"] = (testpath/"state").to_s
     ENV["PORT"] = port.to_s
     ENV["CANOPY_URL"] = "http://127.0.0.1:#{port}"
+    # Avoid clashing with the node name of a running `brew services` instance.
+    ENV["RELEASE_NODE"] = "canopy_test_#{port}@localhost"
 
     log = testpath/"canopy.log"
     pid = spawn bin/"canopy", "start", out: log.to_s, err: [:child, :out]
