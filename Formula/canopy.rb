@@ -4,8 +4,8 @@ require "socket"
 class Canopy < Formula
   desc "Local-first workspace where AI coding agents work as a team"
   homepage "https://github.com/tiki51/canopy"
-  url "https://github.com/tiki51/canopy/releases/download/v0.1.0-beta.3/canopy-0.1.0-beta.3-aarch64-apple-darwin.tar.gz"
-  sha256 "68016e767d637dbe14d4bcc62f43c4c5370f1e6493555fd29d3cebae5d1395a5"
+  url "https://github.com/tiki51/canopy/releases/download/v0.1.0-beta.4/canopy-0.1.0-beta.4-aarch64-apple-darwin.tar.gz"
+  sha256 "b72f5b84c7f8b5e09963925c923b50a90dcda469772d4e7a334133d1921d93a2"
   license "MIT"
 
   depends_on arch: :arm64
