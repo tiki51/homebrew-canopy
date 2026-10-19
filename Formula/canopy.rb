@@ -65,7 +65,7 @@ class Canopy < Formula
         exit
       fi
 
-      # launchd starts services with a minimal PATH, so engines (claude, opencode)
+      # launchd starts services with a minimal PATH, so engines (claude, opencode, codex)
       # and the tools agents run (git, mix, npm) would not resolve. Adopt the
       # PATH from the user's interactive login shell (zsh, bash, or fish), or
       # CANOPY_PATH when it is set. The probe is capped at 10 seconds so a shell
@@ -120,7 +120,7 @@ class Canopy < Formula
       Then open http://127.0.0.1:4000. User data is stored under:
         ~/Library/Application Support/Canopy
 
-      Claude Code and OpenCode are optional, independently installed engines.
+      Claude Code, OpenCode and Codex are optional, independently installed engines.
     EOS
   end
 
